@@ -2,16 +2,15 @@ package main
 
 import (
 	"context"
+	"github.com/magiconair/properties"
 	"github.com/olivere/elastic/v7"
 )
 
-const (
-	ES_URL      = "http://10.128.0.2:9200"
-	ES_USERNAME = "elastic"
-	ES_PASSWORD = "RiV4QOPOj2M4PCAe7ejf"
-)
-
 func readFromES(query elastic.Query, index string) (*elastic.SearchResult, error) {
+	p := properties.MustLoadFile("credentials.properties", properties.UTF8)
+	ES_USERNAME, _ := p.Get("ES_USERNAME")
+	ES_PASSWORD, _ := p.Get("ES_PASSWORD")
+	ES_URL, _ := p.Get("ES_URL")
 	client, err := elastic.NewClient(
 		elastic.SetURL(ES_URL),
 		elastic.SetBasicAuth(ES_USERNAME, ES_PASSWORD))
@@ -27,9 +26,13 @@ func readFromES(query elastic.Query, index string) (*elastic.SearchResult, error
 }
 
 func saveToES(i interface{}, index string, id string) error {
+	p := properties.MustLoadFile("credentials.properties", properties.UTF8)
+	EsUsername, _ := p.Get("ES_USERNAME")
+	EsPassword, _ := p.Get("ES_PASSWORD")
+	EsUrl, _ := p.Get("ES_URL")
 	client, err := elastic.NewClient(
-		elastic.SetURL(ES_URL),
-		elastic.SetBasicAuth(ES_USERNAME, ES_PASSWORD))
+		elastic.SetURL(EsUrl),
+		elastic.SetBasicAuth(EsUsername, EsPassword))
 	if err != nil {
 		return err
 	}

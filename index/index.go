@@ -3,19 +3,23 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/magiconair/properties"
 	"github.com/olivere/elastic/v7"
 )
 
 const (
 	POST_INDEX = "post"
 	USER_INDEX = "user"
-	ES_URL     = "http://10.128.0.2:9200"
 )
 
 func main() {
+	p := properties.MustLoadFile("credentials.properties", properties.UTF8)
+	ES_URL, _ := p.Get("ES_URL")
+	ES_USERNAME, _ := p.Get("ES_USERNAME")
+	ES_PASSWORD, _ := p.Get("ES_PASSWORD")
 	client, err := elastic.NewClient(
 		elastic.SetURL(ES_URL),
-		elastic.SetBasicAuth("elastic", "RiV4QOPOj2M4PCAe7ejf"))
+		elastic.SetBasicAuth(ES_USERNAME, ES_PASSWORD))
 	if err != nil {
 		panic(err)
 	}
